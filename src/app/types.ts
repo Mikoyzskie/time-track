@@ -7,3 +7,11 @@ export interface IEmployees {
   Clock_Status: boolean;
   bcrypt: string;
 }
+
+export interface ClockData {
+  id: string;
+  Clock_User: string;
+  Clock_In_Timestamp: string;
+  Clock_Out_Timestamp: string;
+  date_created: string;
+}

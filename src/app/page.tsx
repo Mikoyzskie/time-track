@@ -1,8 +1,8 @@
 
 
 import { TimeForm } from "@/components/TimeForm";
-import { getAllEmployees } from "@/lib/directus";
-import { IEmployees } from "./types"
+import { getAllEmployees, getAllClocks } from "@/lib/directus";
+import { IEmployees, ClockData } from "./types"
 
 
 export default async function Home() {
@@ -11,10 +11,13 @@ export default async function Home() {
   const employees = all!.map((employee: IEmployees) => {
     return employee
   })
-
+  const clock = await getAllClocks()
+  const clocks = clock!.map((data: ClockData) => {
+    return data
+  })
   return (
     <main>
-      <TimeForm data={employees} />
+      <TimeForm data={employees} clock={clocks} />
     </main>
   );
 }

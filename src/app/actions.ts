@@ -54,7 +54,7 @@ export async function createTodo(
             } else {
               console.log("already logged today");
             }
-            return { message: `test` };
+            return { message: `test`, id: emp.id };
           } else {
             await TimeIn(emp.id);
             revalidatePath("/");
@@ -67,33 +67,9 @@ export async function createTodo(
         return { message: `Pin incorrect` };
       }
     } else {
-      console.log(emps);
       return { message: "User not found" };
     }
   } catch (e) {
-    return { message: "Failed to create todo" };
-  }
-}
-
-export async function deleteTodo(
-  prevState: {
-    message: string;
-  },
-  formData: FormData
-) {
-  const schema = z.object({
-    id: z.string().min(1),
-    todo: z.string().min(1),
-  });
-  const data = schema.parse({
-    id: formData.get("id"),
-    todo: formData.get("todo"),
-  });
-
-  try {
-    revalidatePath("/");
-    return { message: `Deleted todo ${data.todo}` };
-  } catch (e) {
-    return { message: "Failed to delete todo" };
+    return { message: "Failed to time in / out" };
   }
 }

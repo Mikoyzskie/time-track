@@ -2,15 +2,22 @@
 
 import { useFormState, useFormStatus } from "react-dom";
 import { createTodo } from "@/app/actions";
-import { IEmployees } from "@/app/types";
+import { IEmployees, ClockData } from "@/app/types";
 import { Input } from "./ui/input";
 import { Button } from "./ui/button";
 import Time from "./Time";
 import { User } from "./User";
 import Image from 'next/image'
+import { Separator } from "./ui/separator";
+import clsx from "clsx";
+import { useToast } from "@/components/ui/use-toast"
 
+interface IInitial {
+    message: string,
+    id: string
+}
 
-const initialState = {
+const initialState: IInitial = {
     message: "",
     id: ""
 };
@@ -19,21 +26,30 @@ function SubmitButton() {
     const { pending } = useFormStatus();
 
     return (
-        <button className="button rounded-md" type="submit" aria-disabled={pending}>
+        <button className="button rounded-lg text-sm" type="submit" aria-disabled={pending}>
             Time In/Out
         </button>
     );
 }
 
-export function TimeForm({ data }: { data: IEmployees[] }) {
+export function TimeForm({ data, clock }: { data: IEmployees[], clock: ClockData[] }) {
     const [state, formAction] = useFormState(createTodo, initialState);
+    const { toast } = useToast()
 
     let filtered
     if (state && state.id) {
         filtered = data.filter(item => item.id === state.id)
     }
 
-    console.log(filtered);
+    function toasts() {
+        if (state.message === "Failed to time in / out") {
+            toast({
+                title: "Error: Catch up ",
+                description: "Friday, February 10, 2023 at 5:57 PM",
+
+            })
+        }
+    }
 
 
     return (
@@ -46,6 +62,12 @@ export function TimeForm({ data }: { data: IEmployees[] }) {
                         <Time />
                         <Input type="text" id="username" name="username" placeholder="Enter your username..." required />
                         <Input type="password" id="pin" name="pin" placeholder="Enter your pin..." required />
+                        <div className="my-5 grid grid-cols-3 items-center" >
+                            <Separator />
+                            <p className="bg-background text-xs px-2 text-muted-foreground text-center uppercase col-span-">IN / OUT</p>
+                            <Separator />
+
+                        </div>
                         <SubmitButton />
                         <p aria-live="polite" className="sr-only" role="status">
                             {state?.message}
@@ -61,9 +83,13 @@ export function TimeForm({ data }: { data: IEmployees[] }) {
                     height={1919}
                     className="h-screen w-full object-cover"
                 />
-                <div className="absolute inset-0 glass p-16">
-                    <User />
+
+                <div className={clsx("absolute inset-0 glass p-16",
+                    state.id ? "" : "hidden"
+                )}>
+                    <User id={state.id} data={data} clock={clock} />
                 </div>
+
             </div>
         </div>
 

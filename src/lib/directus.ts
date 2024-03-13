@@ -64,12 +64,29 @@ export async function getEmployeeClocks(user: string) {
   return await apiClient?.request(
     readItems(clocks, {
       fields: ["*"],
-      sort: ["-Clock_In_Timestamp"],
+      sort: ["-date_created"],
       filter: {
         Clock_User: {
           _eq: user,
         },
       },
+      limit: 2,
+    })
+  );
+}
+
+export async function getAllClocks() {
+  return await apiClient?.request(
+    readItems(clocks, {
+      fields: [
+        "id",
+        "Clock_User",
+        "Clock_In_Timestamp",
+        "Clock_Out_Timestamp",
+        "date_created",
+      ],
+      sort: ["-date_created"],
+      limit: 2,
     })
   );
 }

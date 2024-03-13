@@ -1,6 +1,7 @@
-import { MdOutlineAccessTime, MdOutlineCalendarToday } from "react-icons/md";
+import { MdOutlineAccessTime } from "react-icons/md";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
-
+import { IEmployees, ClockData } from "@/app/types";
+import { isSameDate } from "@/lib/lib";
 
 const currentDate = new Date();
 
@@ -19,27 +20,48 @@ if (currentDayOfWeek >= 5) { // Friday, Saturday, or Sunday
 const nextDate = new Date(currentDate);
 nextDate.setDate(currentDate.getDate() + daysToAdd);
 
-function time(data: Date | undefined) {
-    if (data) {
-        let hours = data.getHours();
-        const minutes = data.getMinutes();
-        const amOrPm = hours >= 12 ? 'PM' : 'AM';
-        hours = hours % 12;
-        hours = hours ? hours : 12;
-        const formattedTime = hours.toString().padStart(2, '0') + ':' +
-            minutes.toString().padStart(2, '0') + ':' +
-            amOrPm;
-        return formattedTime
-    }
-    return "--:-- --"
-}
+
 
 // Format the next date as desired (optional)
 const formattedNextDate = nextDate.toDateString();
 const formattedCurrentDate = currentDate.toDateString();
 
 
-export function User() {
+export function User({ id, data, clock }: { id: string, data: IEmployees[], clock: ClockData[] }) {
+
+    let filteredEmployee: IEmployees[] = []
+    if (id) {
+        filteredEmployee = data.filter(item => item.id === id)
+    }
+    let filteredClocks: ClockData[] = []
+    if (filteredEmployee.length > 0) {
+        filteredClocks = clock.filter(item => item.Clock_User === filteredEmployee[0].id)
+    }
+
+    let clockObject: ClockData = {
+        id: "",
+        Clock_User: "",
+        Clock_In_Timestamp: "",
+        Clock_Out_Timestamp: "",
+        date_created: ""
+    }
+    let dateString
+    if (filteredClocks.length > 0) {
+        filteredClocks.map((item: ClockData, index) => {
+            const checkDate = isSameDate(item.date_created)
+            if (!checkDate) {
+                clockObject = filteredClocks[index]
+                const newDate = new Date(clockObject.Clock_In_Timestamp)
+                dateString = newDate.toDateString()
+            }
+        })
+    }
+
+
+
+
+
+
     return (
         <ol className="relative border-s border-gray-200 dark:border-gray-700">
             <li className="mb-10 ms-8">
@@ -56,9 +78,9 @@ export function User() {
                 </span>
                 <h3 className="flex items-center mb-1 text-lg font-semibold text-white">
                     {"Today's Shift "}
-                    <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 ms-3">
+                    {/* <span className="bg-blue-100 text-blue-800 text-sm font-medium me-2 px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300 ms-3">
                         Latest
-                    </span>
+                    </span> */}
                 </h3>
                 <time className="block mb-2 text-sm font-normal leading-none text-white">
                     {formattedCurrentDate}
@@ -87,8 +109,11 @@ export function User() {
                 <h3 className="mb-1 text-lg font-semibold text-white">
                     Recent Activity
                 </h3>
-                <time className="block mb-2 text-sm font-normal leading-none text-gray-400 dark:text-gray-500">
-                    Released on December 7th, 2021
+                <time className="block mb-2 text-sm font-normal leading-none text-white">
+                    {
+                        clockObject.id !== "" &&
+                        dateString
+                    }
                 </time>
                 <div className="text-base font-normal text-white flex flex-col gap-2" >
 

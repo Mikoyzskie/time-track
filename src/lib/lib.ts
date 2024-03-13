@@ -12,3 +12,21 @@ export function isSameDate(dateString: string): boolean {
     providedDate.getDate() === currentDate.getDate()
   );
 }
+
+export function time(data: Date) {
+  if (data) {
+    let hours = data.getHours();
+    const minutes = data.getMinutes();
+    const amOrPm = hours >= 12 ? "PM" : "AM";
+    hours = hours % 12;
+    hours = hours ? hours : 12;
+    const formattedTime =
+      hours.toString().padStart(2, "0") +
+      ":" +
+      minutes.toString().padStart(2, "0") +
+      ":" +
+      amOrPm;
+    return formattedTime;
+  }
+  return "--:-- --";
+}
