@@ -7,8 +7,9 @@ import {
   verifyPin,
   getEmployeeClocks,
   TimeIn,
+  Timeout,
 } from "@/lib/directus";
-import { isSameDate } from "@/lib/lib";
+import { isToday } from "@/lib/lib";
 
 export async function createTodo(
   prevState: {
@@ -42,34 +43,66 @@ export async function createTodo(
       if (isValidPin) {
         //check if user already has an entry on clock table
         const clocks = await getEmployeeClocks(emp.id);
+
         if (clocks && clocks.length > 0) {
           //check if the latest entry equals today
           const latest = clocks[0];
-          const checkDate = isSameDate(latest.date_created);
+          const checkDate = isToday(latest.Clock_In_Timestamp);
           //if same day then user already logs today
           //now check if the entry clock out if not null
           if (checkDate) {
             if (latest.Clock_Out_Timestamp === null) {
-              console.log("clock me out");
+              await Timeout(latest.id);
+              revalidatePath("/");
+              return {
+                message: `timeout`,
+                error: undefined,
+                fieldValues: { username: "", pin: "" },
+              };
             } else {
-              console.log("already logged today");
+              return {
+                message: `already`,
+                error: "alreadylogged",
+                fieldValues: { username: "", pin: "" },
+              };
             }
-            return { message: `test`, id: emp.id };
           } else {
             await TimeIn(emp.id);
             revalidatePath("/");
-            return { message: `User Valid`, id: emp.id };
+            return {
+              message: `timein`,
+              error: undefined,
+              fieldValues: { username: "", pin: "" },
+            };
           }
         } else {
-          return { message: `test` };
+          await TimeIn(emp.id);
+          revalidatePath("/");
+          return {
+            message: `timein`,
+            error: undefined,
+            fieldValues: { username: "", pin: "" },
+          };
         }
       } else {
-        return { message: `Pin incorrect` };
+        return {
+          message: `incorrectpin`,
+          error: "notpin",
+          fieldValues: { username: data.username, pin: data.pin },
+        };
       }
     } else {
-      return { message: "User not found" };
+      return {
+        message: `usernotfound`,
+        error: "nouser",
+        fieldValues: { username: data.username, pin: data.pin },
+      };
     }
   } catch (e) {
-    return { message: "Failed to time in / out" };
+    return {
+      message: `servererror`,
+      error: "internal",
+      fieldValues: { username: data.username, pin: data.pin },
+    };
   }
 }

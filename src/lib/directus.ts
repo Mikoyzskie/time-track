@@ -64,7 +64,7 @@ export async function getEmployeeClocks(user: string) {
   return await apiClient?.request(
     readItems(clocks, {
       fields: ["*"],
-      sort: ["-date_created"],
+      sort: ["-Clock_In_Timestamp"],
       filter: {
         Clock_User: {
           _eq: user,
@@ -78,26 +78,33 @@ export async function getEmployeeClocks(user: string) {
 export async function getAllClocks() {
   return await apiClient?.request(
     readItems(clocks, {
-      fields: [
-        "id",
-        "Clock_User",
-        "Clock_In_Timestamp",
-        "Clock_Out_Timestamp",
-        "date_created",
-      ],
-      sort: ["-date_created"],
+      fields: ["id", "Clock_User", "Clock_In_Timestamp", "Clock_Out_Timestamp"],
+      sort: ["-Clock_In_Timestamp"],
       limit: 2,
     })
   );
 }
 
-const current = new Date();
-
 export async function TimeIn(user: number) {
+  let now = new Date();
+  const offset = 8 * 60; // 8 hours * 60 minutes
+  now.setMinutes(now.getMinutes() + offset);
+
   return await apiClient?.request(
     createItem(clocks, {
       Clock_User: user,
-      Clock_In_Timestamp: current,
+      Clock_In_Timestamp: now,
+    })
+  );
+}
+
+export async function Timeout(id: number) {
+  let now = new Date();
+  const offset = 8 * 60; // 8 hours * 60 minutes
+  now.setMinutes(now.getMinutes() + offset);
+  return await apiClient?.request(
+    updateItem(clocks, id, {
+      Clock_Out_Timestamp: now,
     })
   );
 }

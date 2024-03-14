@@ -1,7 +1,7 @@
 import { MdOutlineAccessTime } from "react-icons/md";
 import { IoIosLogIn, IoIosLogOut } from "react-icons/io";
 import { IEmployees, ClockData } from "@/app/types";
-import { isSameDate } from "@/lib/lib";
+import { isToday, time } from "@/lib/lib";
 
 const currentDate = new Date();
 
@@ -38,28 +38,37 @@ export function User({ id, data, clock }: { id: string, data: IEmployees[], cloc
         filteredClocks = clock.filter(item => item.Clock_User === filteredEmployee[0].id)
     }
 
-    let clockObject: ClockData = {
-        id: "",
-        Clock_User: "",
-        Clock_In_Timestamp: "",
-        Clock_Out_Timestamp: "",
-        date_created: ""
-    }
-    let dateString
+    let prevDate
+    let prevIn
+    let prevOut
+    let todayIn
+    let todayOut
+
     if (filteredClocks.length > 0) {
         filteredClocks.map((item: ClockData, index) => {
-            const checkDate = isSameDate(item.date_created)
-            if (!checkDate) {
-                clockObject = filteredClocks[index]
-                const newDate = new Date(clockObject.Clock_In_Timestamp)
-                dateString = newDate.toDateString()
+            const checkDate = isToday(item.Clock_In_Timestamp)
+            if (checkDate) {
+
             }
         })
     }
 
+    if (filteredClocks.length > 0) {
+        prevDate = "--- | --- | -- | ----"
+        prevIn = "--:-- | --"
+        prevOut = "--:-- | --"
+        todayIn = "--:-- | --"
+        todayOut = "--:-- | --"
+    } else {
+        const latest: ClockData = filteredClocks[0]
+        if (latest !== undefined) {
+            console.log("null");
+        } else {
+
+        }
 
 
-
+    }
 
 
     return (
@@ -111,14 +120,13 @@ export function User({ id, data, clock }: { id: string, data: IEmployees[], cloc
                 </h3>
                 <time className="block mb-2 text-sm font-normal leading-none text-white">
                     {
-                        clockObject.id !== "" &&
-                        dateString
+                        prevDate
                     }
                 </time>
                 <div className="text-base font-normal text-white flex flex-col gap-2" >
 
-                    <div className="text-sm flex items-center gap-1"><IoIosLogIn /> Time In: </div>
-                    <div className="text-sm flex items-center gap-1"><IoIosLogOut /> Time Out: </div>
+                    <div className="text-sm flex items-center gap-1"><IoIosLogIn /> Time In: {prevIn}</div>
+                    <div className="text-sm flex items-center gap-1"><IoIosLogOut /> Time Out: {prevOut}</div>
                 </div>
             </li>
             <li className="ms-8">

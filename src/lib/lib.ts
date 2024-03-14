@@ -1,4 +1,4 @@
-export function isSameDate(dateString: string): boolean {
+export function isToday(dateString: string): boolean {
   // Convert the provided date string to a Date object
   const providedDate = new Date(dateString);
 
@@ -13,8 +13,8 @@ export function isSameDate(dateString: string): boolean {
   );
 }
 
-export function time(data: Date) {
-  if (data) {
+export function time(data: Date | null) {
+  if (data !== null) {
     let hours = data.getHours();
     const minutes = data.getMinutes();
     const amOrPm = hours >= 12 ? "PM" : "AM";

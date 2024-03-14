@@ -13,5 +13,4 @@ export interface ClockData {
   Clock_User: string;
   Clock_In_Timestamp: string;
   Clock_Out_Timestamp: string;
-  date_created: string;
 }
