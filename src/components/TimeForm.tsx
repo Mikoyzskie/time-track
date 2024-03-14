@@ -74,10 +74,10 @@ export function TimeForm({ data, clock }: { data: IEmployees[], clock: ClockData
 
 
     return (
-        <div className="container relative h-full min-h-screen flex-col items-center justify-center lg:px-0">
-            <div className=" h-full min-h-screen">
-                <div className="mx-auto flex h-full min-h-screen w-full flex-col justify-center space-y-6 sm:w-[350px]">
-                    <form ref={formRef} action={formAction} className="flex items-center flex-col gap-3">
+        <div className="px-5 relative  flex-col items-center justify-center lg:px-0">
+            <div className="h-screen">
+                <div className="mx-auto flex h-full  w-full flex-col justify-center space-y-6 sm:w-[400px] ">
+                    <form ref={formRef} action={formAction} className="flex items-center flex-col gap-3 bg-white p-6 sm:p-12 rounded-2xl">
                         <Image
                             src="/logo.png"
                             alt="zanda logo"
